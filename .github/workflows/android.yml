@@ -1,3 +1,4 @@
+
 name: Build Photo Cleaner APK
 
 on:
@@ -24,12 +25,11 @@ jobs:
         with:
           targets: aarch64-linux-android,x86_64-linux-android
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Install Android NDK
+      - name: Install Android SDK packages
         run: |
-          sdkmanager "ndk;27.2.12479018"
+          SDKMANAGER=$(find "$ANDROID_HOME/cmdline-tools" -name sdkmanager -type f | head -n 1)
+          yes | "$SDKMANAGER" --licenses || true
+          "$SDKMANAGER" "platform-tools" "platforms;android-35" "ndk;27.2.12479018"
           echo "ANDROID_NDK_HOME=$ANDROID_HOME/ndk/27.2.12479018" >> $GITHUB_ENV
 
       - name: Install Gradle
@@ -56,4 +56,3 @@ jobs:
             android/**/*.apk
           if-no-files-found: warn
           retention-days: 14
-          
